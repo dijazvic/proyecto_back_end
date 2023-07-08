@@ -1,20 +1,8 @@
 class ProductManager {
     products
-    title
-    description
-    price
-    thumbnail
-    code
-    stock
-
+   
     constructor () {  
         this.products = []
-        this.title = ""
-        this.description = ""
-        this.price = ""
-        this.thumbnail = ""
-        this.code = ""
-        this.stock = ""
     }
 }
 
@@ -25,7 +13,10 @@ gerateId = () => {
 
 
 addProduct = (title, description, price, thumbnail, code, stock) => {
-    const product = {
+    if(!title || !description || !price || !thumbnail || !code || !stock){
+        console.log("Todos los campos son requeridos")
+    }
+        const product = {
         id: this.gerateId(),
         title,
         description,
@@ -45,8 +36,7 @@ getProducts= () => {
 
 getProductById = (id) => {
     const findProduct = this.products.find(i=> i.id == id) 
-        
-    if (!findProduct) {
+        if (!findProduct) {
         console.log("Not found")
     }
 }
