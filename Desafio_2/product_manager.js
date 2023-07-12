@@ -1,0 +1,82 @@
+class Product {
+    constructor(title, description, price, thumbnail, code, stock) {
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.thumbnail = thumbnail;
+        this.code = code;
+        this.stock = stock;
+    }
+}
+
+class ProductManager {
+    products;
+    productDirPath;
+    productFilePath;
+    fileSystem;
+
+    constructor() {
+        this.products = new Array();
+        this.productDirPath = "./files";
+        this.productFilePath = this.productDirPath + "/Products.json";
+        this.fileSystem = require("fs");
+    }
+
+    createProduct = async (title, description, price, thumbnail, code, stock) => {
+        let newProduct = new Product(title, description, price, thumbnail, code, stock);
+        console.log("Crear Producto: producto a registrar:");
+        console.log(newProduct);
+        
+        try {
+            await this.fileSystem.promises.mkdir(this.productDirPath, { recursive: true });
+                if (!this.fileSystem.existsSync(this.productFilePath)) {
+                await this.fileSystem.promises.writeFile(this.productFilePath, "[]");
+            }
+
+            let productsFile = await this.fileSystem.promises.readFile(this.productFilePath, "utf-8"); // []
+            console.info("Archivo JSON obtenido desde archivo: ");
+            console.log(productsFile);
+            this.products = JSON.parse(productsFile);
+
+            console.log("Productos encontrados: ");
+            console.log(this.products);
+            this.products.push(newProduct);
+            console.log("Lista actualizada de productos: ");
+            console.log(this.products);
+
+            await this.fileSystem.promises.writeFile(this.productFilePath, JSON.stringify(this.products, null, 2, '\t'));
+        } 
+        catch (error) {
+            console.error(`Error creando producto nuevo: ${JSON.stringify(newProduct)}, detalle del error: ${error}`);
+            throw Error(`Error creando producto nuevo: ${JSON.stringify(newProduct)}, detalle del error: ${error}`);
+        }
+    }
+
+    productList = async () => {
+        try {
+
+            await this.fileSystem.promises.mkdir(this.productDirPath, { recursive: true });
+
+            if (!this.fileSystem.existsSync(this.productFilePath)) {
+                await this.fileSystem.promises.writeFile(this.productFilePath, "[]");
+            }
+
+            let productsFile = await this.fileSystem.promises.readFile(this.productFilePath, "utf-8");
+
+            console.info("Archivo JSON obtenido desde archivo: ");
+            console.log(productsFile);
+            this.products = JSON.parse(productsFile);
+            console.log("Productos encontrados: ");
+            console.log(this.products);
+            return this.products;
+
+        } catch (error) {
+            console.error(`Error consultando los usuarios por archivo, valide el archivo: ${this.productDirPath}, 
+                detalle del error: ${error}`);
+            throw Error(`Error consultando los usuarios por archivo, valide el archivo: ${this.productDirPath},
+             detalle del error: ${error}`);
+        }
+    }
+}
+
+module.exports = ProductManager
