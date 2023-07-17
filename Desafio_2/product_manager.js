@@ -22,11 +22,14 @@ class ProductManager {
         this.fileSystem = require("fs");
     }
 
+ 
+
     createProduct = async (title, description, price, thumbnail, code, stock) => {
         let newProduct = new Product(title, description, price, thumbnail, code, stock);
         console.log("Crear Producto: producto a registrar:");
         console.log(newProduct);
-        
+        validarCodigo();
+                 
         try {
             await this.fileSystem.promises.mkdir(this.productDirPath, { recursive: true });
                 if (!this.fileSystem.existsSync(this.productFilePath)) {
@@ -79,4 +82,21 @@ class ProductManager {
     }
 }
 
+function validarCodigo (code) {
+    var x;
+    var codeProduct = 0;
+    if(typeof Product != "undefined" && Product != null && Product.length != null && Product.length > 0){
+        for(x in Product){
+            codeProduct = Product[x]['codigo'];    
+            if(code == codeProduct){
+                console.log("No pueden haber dos productos con el mismo codigo!");
+                return false;
+            }
+        }
+        return true;      
+    } 
+    else {
+      return true;
+    }
+}
 module.exports = ProductManager
