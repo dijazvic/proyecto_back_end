@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Ventana linea herrero",
+    "description": "Es una ventana economica",
+    "price": "$7000",
+    "thumbnail": "./productos/linea_herrero",
+    "code": "3590",
+    "stock": "20"
+  },
+  {
+    "title": "Cortina black out",
+    "description": "No deja traslucir luz",
+    "price": "$10000",
+    "thumbnail": "./productos/cortina_black_out",
+    "code": "5678",
+    "stock": "5"
+  },
+  {
+    "title": "Puerta placa",
+    "description": "Es una puerta de madera",
+    "price": "$15000",
+    "thumbnail": "./productos/puerta_placa",
+    "code": "1245",
+    "stock": "3"
+  },
+  {
+    "title": "Ventana linea modena",
+    "description": "Es una ventana de mejor calidad",
+    "price": "$20000",
+    "thumbnail": "./productos/linea_modena",
+    "code": "3876",
+    "stock": "10"
+  },
+  {
+    "title": "Cortina sun screen",
+    "description": "Deja traslucir el 100% de la luz",
+    "price": "$12000",
+    "thumbnail": "./productos/cortina_sun_screen",
+    "code": "9417",
+    "stock": "4"
+  },
+  {
+    "title": "Puerta de chapa",
+    "description": "Es una puerta de doble chapa",
+    "price": "$30000",
+    "thumbnail": "./productos/puertas_chapa",
+    "code": "3596",
+    "stock": "1"
+  }
+]
