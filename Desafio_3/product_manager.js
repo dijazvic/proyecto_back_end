@@ -1,122 +1,110 @@
-import express from 'express';
+import fs from 'fs'
+import Product from './product.js'
 
-class Product {
-    constructor(title, description, price, thumbnail, code, stock) {
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.thumbnail = thumbnail;
-        this.code = code;
-        this.stock = stock;
-    }
-}
+export default class ProductManager {
+    
+    #path
+    #countPath
+    #products
 
-class ProductManager {
-    products;
-    productDirPath;
-    productFilePath;
-    fileSystem;
-
-    constructor() {
-        this.products = new Array();
-        this.productDirPath = "./files";
-        this.productFilePath = this.productDirPath + "/Products.json";
-        this.fileSystem = require("fs");
+    constructor(path, countPath){
+        this.#path = path
+        this.#countPath = countPath
+        this.#products = []
     }
 
- 
-
-    createProduct = async (title, description, price, thumbnail, code, stock) => {
-        let newProduct = new Product(title, description, price, thumbnail, code, stock);
-        console.log("Crear Producto: producto a registrar:");
-        console.log(newProduct);
-        validarCodigo();
-                 
+    async #geneteId(){
         try {
-            await this.fileSystem.promises.mkdir(this.productDirPath, { recursive: true });
-                if (!this.fileSystem.existsSync(this.productFilePath)) {
-                await this.fileSystem.promises.writeFile(this.productFilePath, "[]");
+            if(!fs.existsSync(this.#countPath)){
+                await fs.promises.writeFile(this.#countPath, JSON.stringify(1))
+                return 1
             }
-
-            let productsFile = await this.fileSystem.promises.readFile(this.productFilePath, "utf-8"); // []
-            console.info("Archivo JSON obtenido desde archivo: ");
-            console.log(productsFile);
-            this.products = JSON.parse(productsFile);
-
-            console.log("Productos encontrados: ");
-            console.log(this.products);
-            this.products.push(newProduct);
-            console.log("Lista actualizada de productos: ");
-            console.log(this.products);
-
-            await this.fileSystem.promises.writeFile(this.productFilePath, JSON.stringify(this.products, null, 2, '\t'));
-        } 
-        catch (error) {
-            console.error(`Error creando producto nuevo: ${JSON.stringify(newProduct)}, detalle del error: ${error}`);
-            throw Error(`Error creando producto nuevo: ${JSON.stringify(newProduct)}, detalle del error: ${error}`);
-        }
-    }
-
-    productList = async () => {
-        try {
-
-            await this.fileSystem.promises.mkdir(this.productDirPath, { recursive: true });
-
-            if (!this.fileSystem.existsSync(this.productFilePath)) {
-                await this.fileSystem.promises.writeFile(this.productFilePath, "[]");
+            else{
+                const data = await fs.promises.readFile(this.#countPath, 'utf-8')
+                let count = JSON.parse(data)
+                const sumCount = count + 1
+                await fs.promises.writeFile(this.#countPath, JSON.stringify(sumCount))
+                return sumCount
             }
-
-            let productsFile = await this.fileSystem.promises.readFile(this.productFilePath, "utf-8");
-
-            console.info("Archivo JSON obtenido desde archivo: ");
-            console.log(productsFile);
-            this.products = JSON.parse(productsFile);
-            console.log("Productos encontrados: ");
-            console.log(this.products);
-            return this.products;
-
         } catch (error) {
-            console.error(`Error consultando los usuarios por archivo, valide el archivo: ${this.productDirPath}, 
-                detalle del error: ${error}`);
-            throw Error(`Error consultando los usuarios por archivo, valide el archivo: ${this.productDirPath},
-             detalle del error: ${error}`);
+            return console.log(error)
         }
     }
-}
 
-function validarCodigo (code) {
-    var x;
-    var codeProduct = 0;
-    if(typeof Product != "undefined" && Product != null && Product.length != null && Product.length > 0){
-        for(x in Product){
-            codeProduct = Product[x]['codigo'];    
-            if(code == codeProduct){
-                console.log("No pueden haber dos productos con el mismo codigo!");
-                return false;
+
+    async addProduct(title, description, price, thumbnail, code, stock){
+        try {
+            if(!title || !description || !price || !thumbnail || !code || !stock) throw 'Todos los datos son requiridos'
+            this.#products = await this.getProducts()
+            const validateCode = this.#products.some(e=> e.code == code)
+            if(validateCode) throw `Ya existe un producto con code: ${code} `
+            const newProduct = new Product(title, description, price, thumbnail, code, stock)
+            this.#products.push({
+                id: await this.#geneteId(),
+                ...newProduct
+            })
+            await fs.promises.writeFile(this.#path, JSON.stringify(this.#products, null, 2))
+            return newProduct
+        } catch (error) {
+            return console.log(error)
+        }
+    }
+
+    async getProducts(){
+        try {
+            if(!fs.existsSync(this.#path)){
+                return this.#products
+            } 
+            else{
+                const data = await fs.promises.readFile(this.#path, 'utf-8')
+                this.#products = JSON.parse(data)
+                return this.#products
             }
+        } catch (error) {
+            return console.log(error)
         }
-        return true;      
-    } 
-    else {
-      return true;
+    }
+
+    async getProductsById(id){
+        try {
+            const data = await fs.promises.readFile(this.#path, 'utf-8')
+            this.#products = JSON.parse(data)
+            const findProduct = this.#products.find(e=> e.id == id)
+            if(!findProduct) throw 'Product not found'
+            return findProduct
+        } catch (error) {
+            return console.log(error)
+        }
+    }
+
+    async updateProduct(id, newData){
+        try {
+            const product = await this.getProductsById(id)
+            const allProducts = await this.getProducts()
+            const filter = allProducts.filter(i=> i.id != product.id)
+            const newUpdate = {
+                id: id,
+                ...product,
+                ...newData,
+            }
+            filter.push(newUpdate)
+            await fs.promises.writeFile(this.#path, JSON.stringify(filter, null, 2))
+
+            return newUpdate
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async deleteProduct(id){
+        try {
+            const data = await fs.promises.readFile(this.#path, 'utf-8')
+            this.#products = JSON.parse(data)
+            const productDeleted = this.#products.filter(e=> e.id !== id)
+            await fs.promises.writeFile(this.#path, JSON.stringify(productDeleted, null, 2))
+            return productDeleted
+        } catch (error) {
+            return console.log(error)
+        }
     }
 }
-
-const app = express();
-const PORT = 8080;
-app.use(express.urlencoded({ extended: true }));
-
-app.get('/:products', (req, res) => {
-    console.log(req.params);
-    res.send(`Tu producto es: ${req.params.products}`)
-})
-app.get('/products/?limit=', (req, res) => {
-    console.log(req.params);
-    res.send(`Tu limite es de ${6} productos`)
-})
-
-app.listen(PORT, () => {
-    console.log(`Server run on port: ${PORT}`);
-})
-
-module.exports = ProductManager
