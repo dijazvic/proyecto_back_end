@@ -1,0 +1,39 @@
+[
+    {
+      "id": 1,
+      "timestamp": 1646028668845,
+      "products": [{
+        "title": "Ventana linea modena",
+        "description": "Es una ventana de mejor calidad",
+        "price": "$20000",
+        "thumbnail": "./productos/linea_modena",
+        "code": "3876",
+        "stock": "10"
+      }]
+    },
+    {
+      "id": 3,
+      "timestamp": 1646028669265,
+      "products": [{
+        "title": "Puerta de chapa",
+        "description": "Es una puerta de doble chapa",
+        "price": "$30000",
+        "thumbnail": "./productos/puertas_chapa",
+        "code": "3596",
+        "stock": "1"
+      },
+      {
+        "title": "Cortina black out",
+        "description": "No deja traslucir luz",
+        "price": "$10000",
+        "thumbnail": "./productos/cortina_black_out",
+        "code": "5678",
+        "stock": "5"
+      }]
+    },
+    {
+      "id": 2,
+      "timestamp": 1646028659735,
+      "products": []
+    }
+  ]
