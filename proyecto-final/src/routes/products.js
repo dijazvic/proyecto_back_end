@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const ProductManager = require('../managers/ProductManager')
+const ProductManager = require('../managers/productManager')
 const ProductService = new ProductManager()
-let admin = require('../managers/AdminManager.js')
+let admin = require('../managers/adminManager.js')
 
 router.get('/', (req, res) => {
     ProductService.getAll().then(result => res.send(result))

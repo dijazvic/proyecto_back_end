@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const CartManager = require('../managers/CartManager.js')
+const CartManager = require('../managers/cartManager.js')
 const CartService = new CartManager()
-const ProductManager = require('../managers/ProductManager')
+const ProductManager = require('../managers/productManager.js')
 const ProductService = new ProductManager()
 
 router.post('/', (req, res) => {
