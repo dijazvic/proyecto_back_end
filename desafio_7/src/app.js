@@ -9,10 +9,7 @@ import passport from 'passport';
 import initializePassport from './config/passport.config.js';
 
 //Routers
-import viewsRouter from './routes/views.router.js';
-import usersViewRouter from './routes/users.views.router.js';
-import jwtRouter from './routes/jwt.router.js'
-import usersRouter from './routes/users.router.js';
+import viewsRouter from './routes/index.js'
 
 const app = express();
 
@@ -37,11 +34,7 @@ initializePassport();
 app.use(passport.initialize());
 //app.use(passport.session());
 
-//Declare routers:
 app.use("/", viewsRouter);
-app.use("/users", usersViewRouter);
-app.use("/api/jwt", jwtRouter);
-app.use('/api/users', usersRouter);
 
 const SERVER_PORT = 9090;
 app.listen(SERVER_PORT, () => {
